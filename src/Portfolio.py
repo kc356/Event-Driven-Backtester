@@ -1,8 +1,7 @@
 from __future__ import print_function
 
 import datetime
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+from typing import Dict, List, Any
 
 try:
     import Queue as queue
