@@ -106,7 +106,12 @@ class YahooDataHandler(DataManagement):
             # download data from yfinance for symbol. This could be improved as yfinance can download several
             # symbols at the same time
             self.symbol_data[symbol] = yf.download(tickers=[symbol], start=self.start_date,
-                                                   end=self.end_date, interval=self.interval)
+                                                   end=self.end_date, interval=self.interval, auto_adjust=False)
+
+            # Handle multi-level columns (when downloading multiple symbols)
+            if isinstance(self.symbol_data[symbol].columns, pd.MultiIndex):
+                # Flatten the column names to use only the first level
+                self.symbol_data[symbol].columns = self.symbol_data[symbol].columns.get_level_values(0)
 
             # rename columns for consistency
             self.symbol_data[symbol].rename(columns={'Open': 'open',
@@ -120,7 +125,11 @@ class YahooDataHandler(DataManagement):
             self.symbol_data[symbol].index.name = 'datetime'
 
             # create returns column (used for some strategies)
-            self.symbol_data[symbol]['returns'] = self.symbol_data[symbol]["adj_close"].pct_change() * 100.0
+            # Use adj_close if available, otherwise use close (which is already adjusted when auto_adjust=True)
+            if 'adj_close' in self.symbol_data[symbol].columns:
+                self.symbol_data[symbol]['returns'] = self.symbol_data[symbol]["adj_close"].pct_change() * 100.0
+            else:
+                self.symbol_data[symbol]['returns'] = self.symbol_data[symbol]["close"].pct_change() * 100.0
 
             # Combine the index to pad forward values
             if combined_index is None:

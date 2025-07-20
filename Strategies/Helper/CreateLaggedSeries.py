@@ -13,7 +13,7 @@ def create_lagged_series(symbol, start_date, end_date, interval, lags=5):
     the Direction from the previous day, are also included.
     """
     # Obtain stock information from Yahoo Finance
-    df_data = yf.download(tickers=[symbol], start=start_date, end=end_date, interval=interval)
+    df_data = yf.download(tickers=[symbol], start=start_date, end=end_date, interval=interval, auto_adjust=False)
 
     # Create the new lagged DataFrame
     df_lag = pd.DataFrame(index=df_data.index)
