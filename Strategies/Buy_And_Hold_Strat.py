@@ -1,7 +1,6 @@
 from Strategy import Strategy
-from Events import MarketEvent
-from Events import SignalEvent
-
+from Events import MarketEvent, SignalEvent
+from typing import Dict, Any
 import datetime
 
 
@@ -14,7 +13,7 @@ class BuyAndHoldStrat(Strategy):
     as well as a benchmark upon which to compare other strategies.
     """
 
-    def __init__(self, bars, events):
+    def __init__(self, bars: Any, events: Any) -> None:
         """
         Initialises the buy and hold strategy.
 
@@ -22,22 +21,22 @@ class BuyAndHoldStrat(Strategy):
         bars - The DataHandler object that provides bar information
         events - The Event Queue object.
         """
-        self.bars = bars
-        self.symbol_list = self.bars.symbol_list
-        self.events = events
+        self.bars: Any = bars
+        self.symbol_list: list = self.bars.symbol_list
+        self.events: Any = events
 
         # Once buy & hold signal is given, these are set to True
-        self.bought = self._calculate_initial_bought()
+        self.bought: Dict[str, bool] = self._calculate_initial_bought()
 
-    def _calculate_initial_bought(self):
+    def _calculate_initial_bought(self) -> Dict[str, bool]:
         """
         Adds keys to the bought dictionary for all symbols
         and sets them to False.
         """
-        bought = {symbol: False for symbol in self.symbol_list}
+        bought: Dict[str, bool] = {symbol: False for symbol in self.symbol_list}
         return bought
 
-    def calculate_signals(self, event):
+    def calculate_signals(self, event: MarketEvent) -> None:
         """
         For "Buy and Hold" we generate a single signal per symbol
         and then no additional signals. This means we are 
@@ -47,16 +46,16 @@ class BuyAndHoldStrat(Strategy):
         Parameters
         event - A MarketEvent object. 
         """
-        strength = 1.0
+        strength: float = 1.0
         if isinstance(event, MarketEvent):
             for symbol in self.symbol_list:
                 bars = self.bars.get_latest_bar(symbol)
                 if bars is not None and bars != []:
 
-                    dt = datetime.datetime.utcnow()
+                    dt: datetime.datetime = datetime.datetime.utcnow()
 
                     if not self.bought[symbol]:
                         # (Symbol, Datetime, Type = LONG, SHORT or EXIT, Signal strength)
-                        signal = SignalEvent(symbol, dt, "LONG", strength)
+                        signal: SignalEvent = SignalEvent(symbol, dt, "LONG", strength)
                         self.events.put(signal)
                         self.bought[symbol] = True

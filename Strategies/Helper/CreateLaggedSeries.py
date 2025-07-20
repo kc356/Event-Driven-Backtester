@@ -1,9 +1,12 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
+from typing import Union
+from datetime import datetime
 
 
-def create_lagged_series(symbol, start_date, end_date, interval, lags=5):
+def create_lagged_series(symbol: str, start_date: datetime, end_date: datetime, 
+                        interval: str, lags: int = 5) -> pd.DataFrame:
     """
     This creates a Pandas DataFrame that stores the
     percentage returns of the adjusted closing value of
@@ -13,10 +16,10 @@ def create_lagged_series(symbol, start_date, end_date, interval, lags=5):
     the Direction from the previous day, are also included.
     """
     # Obtain stock information from Yahoo Finance
-    df_data = yf.download(tickers=[symbol], start=start_date, end=end_date, interval=interval, auto_adjust=False)
+    df_data: pd.DataFrame = yf.download(tickers=[symbol], start=start_date, end=end_date, interval=interval, auto_adjust=False)
 
     # Create the new lagged DataFrame
-    df_lag = pd.DataFrame(index=df_data.index)
+    df_lag: pd.DataFrame = pd.DataFrame(index=df_data.index)
     df_lag["Today"] = df_data["Adj Close"]
     df_lag["Volume"] = df_data["Volume"]
 
@@ -25,7 +28,7 @@ def create_lagged_series(symbol, start_date, end_date, interval, lags=5):
         df_lag[f"Lag{i + 1}"] = df_data["Adj Close"].shift(i + 1)
 
     # Create the returns DataFrame
-    df_ret = pd.DataFrame(index=df_lag.index)
+    df_ret: pd.DataFrame = pd.DataFrame(index=df_lag.index)
     df_ret['Volume'] = df_lag['Volume']
     df_ret['Today'] = df_lag['Today'].pct_change() * 100  # daily returns
 

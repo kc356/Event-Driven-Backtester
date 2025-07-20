@@ -1,9 +1,10 @@
 from __future__ import print_function
 import numpy as np
 import pandas as pd
+from typing import Tuple, Union
 
 
-def create_sharpe_ratio(returns, periods=252):
+def create_sharpe_ratio(returns: pd.Series, periods: int = 252) -> float:
     """
     Create the Sharpe ratio for the strategy, based on a
     benchmark of zero (i.e. no risk-free rate information).
@@ -15,7 +16,7 @@ def create_sharpe_ratio(returns, periods=252):
     return np.sqrt(periods) * (np.mean(returns)) / np.std(returns)
 
 
-def create_drawdowns(equity_curve):
+def create_drawdowns(equity_curve: pd.Series) -> Tuple[pd.Series, float, float]:
     """
     Calculate the largest peak-to-trough drawdown of the equity curve
     as well as the duration of the drawdown. Requires that the
@@ -28,11 +29,11 @@ def create_drawdowns(equity_curve):
     """
 
     # Calculate the cumulative returns curve and set up the High Water Mark
-    high_water_mark = [0]
+    high_water_mark: list = [0]
     # Create the drawdown and duration series
     idx = equity_curve.index
-    drawdown = pd.Series(index=idx)
-    duration = pd.Series(index=idx)
+    drawdown: pd.Series = pd.Series(index=idx)
+    duration: pd.Series = pd.Series(index=idx)
     # Loop over the index range
     for i in range(1, len(idx)):
         high_water_mark.append(max(high_water_mark[i - 1], equity_curve.iloc[i]))

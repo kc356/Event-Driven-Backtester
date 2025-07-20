@@ -1,11 +1,18 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from typing import Tuple
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
 
 # Function to plot performance from equity curve saved in csv format
 if __name__ == "__main__":
-    data = pd.io.parsers.read_csv("equity.csv", header=0, parse_dates=True, index_col=0)
+    data: pd.DataFrame = pd.io.parsers.read_csv("equity.csv", header=0, parse_dates=True, index_col=0)
     # Plot three charts: Equity curve,
     # period returns, drawdowns
+    fig: Figure
+    ax1: Axes
+    ax2: Axes
+    ax3: Axes
     fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True)
     # Set the outer colour to white
     fig.patch.set_facecolor("white")
