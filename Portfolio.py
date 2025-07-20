@@ -218,7 +218,7 @@ class Portfolio(object):
         """
         Creates a list of summary statistics for the portfolio.
         """
-        total_return = self.equity_curve["equity_curve"][-1]
+        total_return = self.equity_curve["equity_curve"].iloc[-1]
         returns = self.equity_curve["returns"]
         pnl = self.equity_curve["equity_curve"]
         sharpe_ratio = create_sharpe_ratio(returns, periods=252)

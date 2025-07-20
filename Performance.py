@@ -35,7 +35,7 @@ def create_drawdowns(equity_curve):
     duration = pd.Series(index=idx)
     # Loop over the index range
     for i in range(1, len(idx)):
-        high_water_mark.append(max(high_water_mark[i - 1], equity_curve[i]))
-        drawdown[i] = high_water_mark[i] - equity_curve[i]
-        duration[i] = 0 if drawdown[i] == 0 else duration[i - 1] + 1
+        high_water_mark.append(max(high_water_mark[i - 1], equity_curve.iloc[i]))
+        drawdown.iloc[i] = high_water_mark[i] - equity_curve.iloc[i]
+        duration.iloc[i] = 0 if drawdown.iloc[i] == 0 else duration.iloc[i - 1] + 1
     return drawdown, drawdown.max(), duration.max()
