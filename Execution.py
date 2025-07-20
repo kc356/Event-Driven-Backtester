@@ -50,6 +50,5 @@ class SimpleSimulatedExecutionHandler(ExecutionHandler):
         """
 
         if isinstance(event, OrderEvent):
-            fill_event: FillEvent = FillEvent(datetime.utcnow(), event.symbol, "FAKE_EXCHANGE", event.quantity, event.direction,
-                                   None)
+            fill_event: FillEvent = FillEvent(datetime.utcnow(), event.symbol, "FAKE_EXCHANGE", event.quantity, event.direction, float("nan"))
             self.events.put(fill_event)

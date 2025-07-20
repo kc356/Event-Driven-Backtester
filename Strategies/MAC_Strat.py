@@ -70,7 +70,7 @@ class MovingAverageCrossOverStrat(Strategy):
 
                     elif short_sma < long_sma and self.bought[symbol] == "LONG":
                         print("SHORT position at: %s" % bar_datetime)
-                        signal_type: str = "EXIT"
-                        signal: SignalEvent = SignalEvent(symbol, dt, signal_type, strength)
+                        signal_type = "EXIT"
+                        signal = SignalEvent(symbol, dt, signal_type, strength)
                         self.events.put(signal)
                         self.bought[symbol] = "OUT"
