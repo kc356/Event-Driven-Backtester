@@ -19,7 +19,7 @@ from src.Portfolio import Portfolio
 from src.Strategies import ETFDailyForecastStrategy
 
 
-def main():
+def main() -> None:
     """Run a basic backtest example."""
     
     print("Running Basic Backtest Example")

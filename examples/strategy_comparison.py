@@ -19,7 +19,7 @@ from src.Portfolio import Portfolio
 from src.Strategies import ETFDailyForecastStrategy, MovingAverageCrossOverStrat, BuyAndHoldStrat
 
 
-def run_strategy_backtest(strategy_class, strategy_name, symbol_list, start_date, end_date, initial_capital):
+def run_strategy_backtest(strategy_class, strategy_name, symbol_list, start_date, end_date, initial_capital) -> Backtest:
     """Run a backtest for a specific strategy."""
     
     print(f"\nRunning {strategy_name} Strategy")
@@ -43,7 +43,7 @@ def run_strategy_backtest(strategy_class, strategy_name, symbol_list, start_date
     return backtest
 
 
-def main():
+def main() -> None:
     """Compare different trading strategies."""
     
     print("Strategy Comparison Example")
