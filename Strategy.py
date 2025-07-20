@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from typing import Any
 
 
 class Strategy(object):
@@ -11,7 +12,7 @@ class Strategy(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def calculate_signals(self):
+    def calculate_signals(self, event: Any) -> None:
         """
         Provides the mechanisms to calculate the list of signals.
         """

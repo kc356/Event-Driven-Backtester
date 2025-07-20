@@ -5,6 +5,7 @@ Main program to run a backtest for a particular strategy
 # Importing some packages
 from datetime import datetime
 from pathlib import Path
+from typing import List
 
 # Import the different components of the backtester
 from BacktesterLoop import Backtest
@@ -16,15 +17,15 @@ from Strategies.ETF_Forecast import ETFDailyForecastStrategy
 from Strategies.MAC_Strat import MovingAverageCrossOverStrat
 
 if __name__ == "__main__":
-    data_dir = Path.cwd() / 'DataDir'  # For reading from CSV files
-    symbol_list = ['^OEX']
-    initial_capital = 100000.0
-    start_date = datetime(2016, 1, 1, 0, 0, 0)
-    end_date = datetime(2021, 1, 1, 0, 0, 0)
-    interval = '1d'
-    heartbeat = 0.0  # necessary for live feed
+    data_dir: Path = Path.cwd() / 'DataDir'  # For reading from CSV files
+    symbol_list: List[str] = ['TQQQ']
+    initial_capital: float = 100000.0
+    start_date: datetime = datetime(2016, 1, 1, 0, 0, 0)
+    end_date: datetime = datetime(2021, 1, 1, 0, 0, 0)
+    interval: str = '1d'
+    heartbeat: float = 0.0  # necessary for live feed
 
-    backtest = Backtest(data_dir,  # data directory of CSV files
+    backtest: Backtest = Backtest(data_dir,  # data directory of CSV files
                         symbol_list,  # list of symbols
                         initial_capital,  # initial capital available for trading
                         heartbeat,  # heartbeat to count time in real live trading simulation

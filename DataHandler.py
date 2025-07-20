@@ -4,7 +4,8 @@ import numpy as np
 import os
 import pandas as pd
 import yfinance as yf
-
+from typing import Dict, List, Tuple, Optional, Iterator, Any, Union
+from datetime import datetime
 from abc import ABCMeta, abstractmethod
 from Events import MarketEvent
 
@@ -18,28 +19,28 @@ class DataManagement(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_latest_bar(self, symbol):
+    def get_latest_bar(self, symbol: str) -> Tuple[datetime, pd.Series]:
         """
         Returns the last bar updated.
         """
         raise NotImplementedError("Should implement get_latest_bar()")
 
     @abstractmethod
-    def get_latest_bars(self, symbol, N=1):
+    def get_latest_bars(self, symbol: str, N: int = 1) -> List[Tuple[datetime, pd.Series]]:
         """
         Returns the last N bars updated.
         """
         raise NotImplementedError("Should implement get_latest_bars()")
 
     @abstractmethod
-    def get_latest_bar_datetime(self, symbol):
+    def get_latest_bar_datetime(self, symbol: str) -> datetime:
         """
         Returns a Python datetime object for the last bar.
         """
         raise NotImplementedError("Should implement get_latest_bar_datetime()")
 
     @abstractmethod
-    def get_latest_bar_value(self, symbol, val_type):
+    def get_latest_bar_value(self, symbol: str, val_type: str) -> float:
         """
         Returns one of the Open, High, Low, Close, Volume or OI
         from the last bar.
@@ -47,7 +48,7 @@ class DataManagement(object):
         raise NotImplementedError("Should implement get_latest_bar_value()")
 
     @abstractmethod
-    def get_latest_bars_values(self, symbol, val_type, N=1):
+    def get_latest_bars_values(self, symbol: str, val_type: str, N: int = 1) -> np.ndarray:
         """
         Returns the last N bar values from the
         latest_symbol list, or N-k if less available.
@@ -55,7 +56,7 @@ class DataManagement(object):
         raise NotImplementedError("Should implement get_latest_bars_values()")
 
     @abstractmethod
-    def update_bars(self):
+    def update_bars(self) -> None:
         """
         Pushes the latest bars to the bars_queue for each symbol
         in a tuple OHLCVI format: (datetime, open, high, low,
@@ -71,7 +72,8 @@ class YahooDataHandler(DataManagement):
     trading interface.
     """
 
-    def __init__(self, events, symbol_list, interval, start_date, end_date):
+    def __init__(self, events: Any, symbol_list: List[str], interval: str, 
+                 start_date: datetime, end_date: datetime) -> None:
         """
         Initialize Queries from yahoo finance api to
         receive historical data transformed to dataframe
@@ -90,17 +92,17 @@ class YahooDataHandler(DataManagement):
         self.interval = interval
         self.start_date = start_date
         self.end_date = end_date
-        self.symbol_data = {}
-        self.latest_symbol_data = {}
+        self.symbol_data: Dict[str, Iterator[Tuple[datetime, pd.Series]]] = {}
+        self.latest_symbol_data: Dict[str, List[Tuple[datetime, pd.Series]]] = {}
         self.continue_backtest = True
         self._load_data_from_Yahoo_finance()
 
-    def _load_data_from_Yahoo_finance(self):
+    def _load_data_from_Yahoo_finance(self) -> None:
         """
         Queries yfinance api to receive historical data in csv file format
         """
 
-        combined_index = None
+        combined_index: Optional[pd.DatetimeIndex] = None
         for symbol in self.symbol_list:
 
             # download data from yfinance for symbol. This could be improved as yfinance can download several
@@ -144,7 +146,7 @@ class YahooDataHandler(DataManagement):
         for symbol in self.symbol_list:
             self.symbol_data[symbol] = self.symbol_data[symbol].reindex(index=combined_index, method="pad").iterrows()
 
-    def _get_new_bar(self, symbol):
+    def _get_new_bar(self, symbol: str) -> Iterator[Tuple[datetime, pd.Series]]:
         """
         Returns the latest bar from the data feed as a tuple of
         (symbol, datetime, open, low, high, close, volume, adj_close, etc).
@@ -152,7 +154,7 @@ class YahooDataHandler(DataManagement):
         for bar in self.symbol_data[symbol]:
             yield bar
 
-    def get_latest_bar(self, symbol):
+    def get_latest_bar(self, symbol: str) -> Tuple[datetime, pd.Series]:
         """
         Returns the last bar from the latest_symbol list.
         """
@@ -165,7 +167,7 @@ class YahooDataHandler(DataManagement):
         else:
             return bars_list[-1]
 
-    def get_latest_bars(self, symbol, N=1):
+    def get_latest_bars(self, symbol: str, N: int = 1) -> List[Tuple[datetime, pd.Series]]:
         """
         Returns the last N bars from the latest_symbol list,
         or N-k if less available.
@@ -179,7 +181,7 @@ class YahooDataHandler(DataManagement):
         else:
             return bars_list[-N:]
 
-    def get_latest_bar_datetime(self, symbol):
+    def get_latest_bar_datetime(self, symbol: str) -> datetime:
         """
         Returns a Python datetime object for the last bar.
         """
@@ -191,7 +193,7 @@ class YahooDataHandler(DataManagement):
         else:
             return bars_list[-1][0]
 
-    def get_latest_bar_value(self, symbol, value_type):
+    def get_latest_bar_value(self, symbol: str, value_type: str) -> float:
         """
         Returns one of the Open, High, Low, Close, Volume or OI
         values from the pandas Bar series object.
@@ -204,7 +206,7 @@ class YahooDataHandler(DataManagement):
         else:
             return getattr(bars_list[-1][1], value_type)
 
-    def get_latest_bars_values(self, symbol, value_type, N=1):
+    def get_latest_bars_values(self, symbol: str, value_type: str, N: int = 1) -> np.ndarray:
         """
         Returns the last N bar values from the
         latest_symbol list, or N-k if less available.
@@ -217,7 +219,7 @@ class YahooDataHandler(DataManagement):
         else:
             return np.array([getattr(bar[1], value_type) for bar in bars_list])
 
-    def update_bars(self):
+    def update_bars(self) -> None:
         """
         Pushes the latest bar to the latest_symbol_data structure
         for all symbols in the symbol list.
@@ -241,7 +243,7 @@ class HistoricCSVDataHandler(DataManagement):
     trading interface.
     """
 
-    def __init__(self, events, csv_dir, symbol_list):
+    def __init__(self, events: Any, csv_dir: str, symbol_list: List[str]) -> None:
 
         """
         Initialises the historic data handler by requesting
@@ -258,18 +260,18 @@ class HistoricCSVDataHandler(DataManagement):
         self.csv_dir = csv_dir
         self.symbol_list = symbol_list
 
-        self.symbol_data = {}
-        self.latest_symbol_data = {}
+        self.symbol_data: Dict[str, Iterator[Tuple[datetime, pd.Series]]] = {}
+        self.latest_symbol_data: Dict[str, List[Tuple[datetime, pd.Series]]] = {}
         self.continue_backtest = True
         self._data_conversion_from_csv_files()
 
-    def _data_conversion_from_csv_files(self):
+    def _data_conversion_from_csv_files(self) -> None:
         """
         Opens the CSV files from the data directory, converting
         them into pandas DataFrames within a symbol dictionary.
         """
 
-        combined_index = None
+        combined_index: Optional[pd.DatetimeIndex] = None
         for symbol in self.symbol_list:
             # Load the CSV file with no header information, indexed on date
             self.symbol_data[symbol] = pd.io.parsers.read_csv(
@@ -277,6 +279,16 @@ class HistoricCSVDataHandler(DataManagement):
                 header=0, index_col=0,
                 names=["datetime", "open", "high", "low", "close", "adj_close", "volume"]
             )
+
+            # rename index as well from 'Date' to 'datetime'
+            self.symbol_data[symbol].index.name = 'datetime'
+
+            # create returns column (used for some strategies)
+            # Use adj_close if available, otherwise use close
+            if 'adj_close' in self.symbol_data[symbol].columns:
+                self.symbol_data[symbol]['returns'] = self.symbol_data[symbol]["adj_close"].pct_change() * 100.0
+            else:
+                self.symbol_data[symbol]['returns'] = self.symbol_data[symbol]["close"].pct_change() * 100.0
 
             # Combine the index to pad forward values
             if combined_index is None:
@@ -291,7 +303,7 @@ class HistoricCSVDataHandler(DataManagement):
         for symbol in self.symbol_list:
             self.symbol_data[symbol] = self.symbol_data[symbol].reindex(index=combined_index, method="pad").iterrows()
 
-    def _get_new_bar(self, symbol):
+    def _get_new_bar(self, symbol: str) -> Iterator[Tuple[datetime, pd.Series]]:
         """
         Returns the latest bar from the data feed as a tuple of
         (symbol, datetime, open, low, high, close, volume, adj_close).
@@ -299,7 +311,7 @@ class HistoricCSVDataHandler(DataManagement):
         for bar in self.symbol_data[symbol]:
             yield bar
 
-    def get_latest_bar(self, symbol):
+    def get_latest_bar(self, symbol: str) -> Tuple[datetime, pd.Series]:
         """
         Returns the last bar from the latest_symbol list.
         """
@@ -312,7 +324,7 @@ class HistoricCSVDataHandler(DataManagement):
         else:
             return bars_list[-1]
 
-    def get_latest_bars(self, symbol, N=1):
+    def get_latest_bars(self, symbol: str, N: int = 1) -> List[Tuple[datetime, pd.Series]]:
         """
         Returns the last N bars from the latest_symbol list,
         or N-k if less available.
@@ -326,7 +338,7 @@ class HistoricCSVDataHandler(DataManagement):
         else:
             return bars_list[-N:]
 
-    def get_latest_bar_datetime(self, symbol):
+    def get_latest_bar_datetime(self, symbol: str) -> datetime:
         """
         Returns a Python datetime object for the last bar.
         """
@@ -338,7 +350,7 @@ class HistoricCSVDataHandler(DataManagement):
         else:
             return bars_list[-1][0]
 
-    def get_latest_bar_value(self, symbol, value_type):
+    def get_latest_bar_value(self, symbol: str, value_type: str) -> float:
         """
         Returns one of the Open, High, Low, Close, Volume or OI
         values from the pandas Bar series object.
@@ -351,7 +363,7 @@ class HistoricCSVDataHandler(DataManagement):
         else:
             return getattr(bars_list[-1][1], value_type)
 
-    def get_latest_bars_values(self, symbol, value_type, N=1):
+    def get_latest_bars_values(self, symbol: str, value_type: str, N: int = 1) -> np.ndarray:
         """
         Returns the last N bar values from the
         latest_symbol list, or N-k if less available.
@@ -364,7 +376,7 @@ class HistoricCSVDataHandler(DataManagement):
         else:
             return np.array([getattr(bar[1], value_type) for bar in bars_list])
 
-    def update_bars(self):
+    def update_bars(self) -> None:
         """
         Pushes the latest bar to the latest_symbol_data structure
         for all symbols in the symbol list.

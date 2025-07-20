@@ -1,3 +1,7 @@
+from typing import Optional, Union
+from datetime import datetime
+
+
 class Event(object):
     """
     Event is base class providing an interface for all subsequent 
@@ -12,11 +16,11 @@ class MarketEvent(Event):
     Handles the event of receiving a new market update with corresponding bars.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialises the MarketEvent.
         """
-        self.type = "MARKET"
+        self.type: str = "MARKET"
 
 
 class SignalEvent(Event):
@@ -30,12 +34,12 @@ class SignalEvent(Event):
     strength - strength of the signal --> TODO: this should be given from a risk class when applying multiple strats
     """
 
-    def __init__(self, symbol, datetime, signal_type, strength):
-        self.type = "SIGNAL"
-        self.symbol = symbol
-        self.datetime = datetime
-        self.signal_type = signal_type
-        self.strength = strength
+    def __init__(self, symbol: str, datetime: datetime, signal_type: str, strength: float) -> None:
+        self.type: str = "SIGNAL"
+        self.symbol: str = symbol
+        self.datetime: datetime = datetime
+        self.signal_type: str = signal_type
+        self.strength: float = strength
 
 
 class OrderEvent(Event):
@@ -50,14 +54,14 @@ class OrderEvent(Event):
     direction - 1 or -1 based on the type
     """
 
-    def __init__(self, symbol, order_type, quantity, direction):
-        self.type = "ORDER"
-        self.symbol = symbol
-        self.order_type = order_type
-        self.quantity = quantity
-        self.direction = direction
+    def __init__(self, symbol: str, order_type: str, quantity: int, direction: int) -> None:
+        self.type: str = "ORDER"
+        self.symbol: str = symbol
+        self.order_type: str = order_type
+        self.quantity: int = quantity
+        self.direction: int = direction
 
-    def print_order(self):
+    def print_order(self) -> None:
         """
         Outputs the values within the Order.
         """
@@ -79,23 +83,25 @@ class FillEvent(Event):
     commission - Defaulted to None if non specified
     """
 
-    def __init__(self, datetime, symbol, exchange, quantity, direction, fill_cost, commission=None):
+    def __init__(self, datetime: datetime, symbol: str, exchange: str, 
+                 quantity: int, direction: int, fill_cost: float, 
+                 commission: Optional[float] = None) -> None:
 
-        self.type = "FILL"
-        self.datetime = datetime
-        self.symbol = symbol
-        self.exchange = exchange
-        self.quantity = quantity
-        self.direction = direction
-        self.fill_cost = fill_cost
+        self.type: str = "FILL"
+        self.datetime: datetime = datetime
+        self.symbol: str = symbol
+        self.exchange: str = exchange
+        self.quantity: int = quantity
+        self.direction: int = direction
+        self.fill_cost: float = fill_cost
 
         # Calculate commission
         if commission is None:
-            self.commission = self._calculate_commission()
+            self.commission: float = self._calculate_commission()
         else:
-            self.commission = commission
+            self.commission: float = commission
 
-    def _calculate_commission(self):
+    def _calculate_commission(self) -> float:
         """
         TODO: Commission fees to be implemented
         """

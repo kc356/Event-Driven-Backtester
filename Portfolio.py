@@ -1,6 +1,8 @@
 from __future__ import print_function
 
 import datetime
+from typing import Dict, List, Any, Optional
+from datetime import datetime
 
 try:
     import Queue as queue
@@ -22,7 +24,8 @@ class Portfolio(object):
     quantity of positions held.
     """
 
-    def __init__(self, bars, events, start_date, initial_capital=100000.0):
+    def __init__(self, bars: Any, events: Any, start_date: datetime, 
+                 initial_capital: float = 100000.0) -> None:
 
         self.bars = bars
         self.events = events
@@ -30,39 +33,39 @@ class Portfolio(object):
         self.start_date = start_date
         self.initial_capital = initial_capital
 
-        self.all_positions = self.define_all_positions()
-        self.current_positions = {symbol: 0 for symbol in self.symbol_list}
-        self.all_holdings = self.define_all_holdings()
-        self.current_holdings = self.define_current_holdings()
+        self.all_positions: List[Dict[str, Any]] = self.define_all_positions()
+        self.current_positions: Dict[str, int] = {symbol: 0 for symbol in self.symbol_list}
+        self.all_holdings: List[Dict[str, Any]] = self.define_all_holdings()
+        self.current_holdings: Dict[str, float] = self.define_current_holdings()
 
-    def define_all_positions(self):
+    def define_all_positions(self) -> List[Dict[str, Any]]:
         """
         Creates a list of positions of all symbols at start_date time index
         """
-        positions = {symbol: 0 for symbol in self.symbol_list}
+        positions: Dict[str, Any] = {symbol: 0 for symbol in self.symbol_list}
         positions['datetime'] = self.start_date
         return [positions]
 
-    def define_all_holdings(self):
+    def define_all_holdings(self) -> List[Dict[str, Any]]:
         """
         Similar to positions, creates the list of holdings using
         start_date as initial time index.
 
         Holdings should consider the time, cash, commission and the total
         """
-        holdings = {symbol: 0 for symbol in self.symbol_list}
+        holdings: Dict[str, Any] = {symbol: 0 for symbol in self.symbol_list}
         holdings['datetime'] = self.start_date
         holdings['cash'] = self.initial_capital
         holdings['commission'] = 0.0
         holdings['total'] = self.initial_capital
         return [holdings]
 
-    def define_current_holdings(self):
+    def define_current_holdings(self) -> Dict[str, float]:
         """
         This builds the dictionary which will hold the instantaneous
         value of the portfolio across all symbols.
         """
-        holdings = {symbol: 0.0 for symbol in self.symbol_list}
+        holdings: Dict[str, float] = {symbol: 0.0 for symbol in self.symbol_list}
         holdings["cash"] = self.initial_capital
         holdings["commission"] = 0.0
         holdings["total"] = self.initial_capital
@@ -72,7 +75,7 @@ class Portfolio(object):
     This is the update of the portfolio value at each new datafeed coming from a MarketEvent
     """
 
-    def update_timeindex(self, event):
+    def update_timeindex(self, event: Any) -> None:
         """
         Adds a new record to the positions matrix for the current
         market data bar. This reflects the PREVIOUS bar, i.e. all
@@ -84,14 +87,14 @@ class Portfolio(object):
         # Update positions
         # ================
         # Dictionary comprehension list with all symbol keys updated by current_positions values
-        positions = {symbol: self.current_positions[symbol] for symbol in self.symbol_list}
+        positions: Dict[str, Any] = {symbol: self.current_positions[symbol] for symbol in self.symbol_list}
         positions["datetime"] = latest_datetime
         # Append the current positions
         self.all_positions.append(positions)
 
         # Update holdings
         # ===============
-        holdings = {symbol: 0.0 for symbol in self.symbol_list}
+        holdings: Dict[str, Any] = {symbol: 0.0 for symbol in self.symbol_list}
         holdings["datetime"] = latest_datetime
         holdings["cash"] = self.current_holdings["cash"]
         holdings["commission"] = self.current_holdings["commission"]
