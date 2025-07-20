@@ -1,14 +1,11 @@
-.PHONY: help install test lint format clean docs run-example
+.PHONY: help install test lint format clean run-example
 
 help:  ## Show this help message
 	@echo "Event-Driven Backtester - Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install:  ## Install the package in development mode
-	pip install -e .
-
-install-dev:  ## Install development dependencies
-	pip install -e ".[dev]"
+install:  ## Install dependencies
+	pip install -r requirements.txt
 
 test:  ## Run tests
 	pytest tests/ -v
@@ -18,7 +15,6 @@ test-watch:  ## Run tests in watch mode
 
 lint:  ## Run linting checks
 	flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503
-	mypy src/ --ignore-missing-imports
 
 format:  ## Format code with black
 	black src/ tests/ --line-length=88
@@ -34,28 +30,14 @@ clean:  ## Clean up generated files
 	rm -rf dist/
 	rm -rf .pytest_cache/
 	rm -rf .mypy_cache/
-	rm -rf htmlcov/
-	rm -rf .coverage
-
-docs:  ## Build documentation
-	@echo "Building documentation..."
-	@if ! command -v sphinx-build > /dev/null 2>&1; then \
-		echo "Sphinx not found. Installing sphinx and sphinx-rtd-theme..."; \
-		pip install sphinx sphinx-rtd-theme; \
-	fi
-	cd docs && make html
-	@echo "Documentation built successfully in docs/_build/html/"
 
 run-example:  ## Run example backtest
-	python run_backtest.py --symbol TQQQ --start-date 2016-01-01 --end-date 2021-01-01 --strategy ETF_Forecast
+	python run_backtest.py --symbol SPY --start-date 2016-01-01 --end-date 2021-01-01 --strategy ETF_Forecast
 
 run-mac:  ## Run MAC strategy backtest
-	python run_backtest.py --symbol TQQQ --start-date 2016-01-01 --end-date 2021-01-01 --strategy MAC_Strat
+	python run_backtest.py --symbol SPY --start-date 2016-01-01 --end-date 2021-01-01 --strategy MAC_Strat
 
 run-buyhold:  ## Run Buy and Hold strategy backtest
-	python run_backtest.py --symbol TQQQ --start-date 2016-01-01 --end-date 2021-01-01 --strategy Buy_And_Hold
-
-setup-precommit:  ## Setup pre-commit hooks
-	pre-commit install
+	python run_backtest.py --symbol SPY --start-date 2016-01-01 --end-date 2021-01-01 --strategy Buy_And_Hold
 
 all: format lint test  ## Run format, lint, and test 
