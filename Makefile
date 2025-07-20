@@ -38,7 +38,13 @@ clean:  ## Clean up generated files
 	rm -rf .coverage
 
 docs:  ## Build documentation
+	@echo "Building documentation..."
+	@if ! command -v sphinx-build > /dev/null 2>&1; then \
+		echo "Sphinx not found. Installing sphinx and sphinx-rtd-theme..."; \
+		pip install sphinx sphinx-rtd-theme; \
+	fi
 	cd docs && make html
+	@echo "Documentation built successfully in docs/_build/html/"
 
 run-example:  ## Run example backtest
 	python run_backtest.py --symbol TQQQ --start-date 2016-01-01 --end-date 2021-01-01 --strategy ETF_Forecast

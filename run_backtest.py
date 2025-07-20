@@ -89,7 +89,7 @@ def main():
     
     # Basic arguments
     parser.add_argument('--symbol', '-s', type=str, nargs='+', 
-                       help='Trading symbols (e.g., TQQQ SPY)')
+                       help='Trading symbols (e.g., SPY QQQ AAPL)')
     parser.add_argument('--start-date', type=parse_date,
                        help='Start date (YYYY-MM-DD)')
     parser.add_argument('--end-date', type=parse_date,
