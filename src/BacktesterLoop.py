@@ -7,10 +7,10 @@ except ImportError:
     import queue
 import time
 
-from Events import MarketEvent
-from Events import SignalEvent
-from Events import OrderEvent
-from Events import FillEvent
+from .Events import MarketEvent
+from .Events import SignalEvent
+from .Events import OrderEvent
+from .Events import FillEvent
 
 
 class Backtest(object):

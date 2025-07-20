@@ -7,7 +7,7 @@ import yfinance as yf
 from typing import Dict, List, Tuple, Optional, Iterator, Any, Union
 from datetime import datetime
 from abc import ABCMeta, abstractmethod
-from Events import MarketEvent
+from .Events import MarketEvent
 
 
 class DataManagement(object):

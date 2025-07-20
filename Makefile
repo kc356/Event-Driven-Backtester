@@ -11,10 +11,10 @@ install-dev:  ## Install development dependencies
 	pip install -e ".[dev]"
 
 test:  ## Run tests
-	pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+	pytest tests/ -v
 
 test-watch:  ## Run tests in watch mode
-	pytest tests/ -v --cov=src --cov-report=html --cov-report=term -f
+	pytest tests/ -v -f
 
 lint:  ## Run linting checks
 	flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503

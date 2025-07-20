@@ -10,8 +10,8 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
-from Events import FillEvent, OrderEvent, SignalEvent
-from Performance import create_sharpe_ratio, create_drawdowns
+from .Events import FillEvent, OrderEvent, SignalEvent
+from .Performance import create_sharpe_ratio, create_drawdowns
 from math import floor
 
 
